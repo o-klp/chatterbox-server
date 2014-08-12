@@ -5,10 +5,14 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 
+/*
+  { username:'b', text:'this is a test', objectID: '123asdasd1', roomname: 'lobby' },
+   { username:'foo', text:'this is what data looks like', objectID: '75', roomname: 'lobby' }
+*/
+var url = require('url');
+
 var messages = { results:[
-  { username:'joe', text:'this is a test', objectID: '123123asdasd1', roomname: 'lobby' },
-  { username:'joe', text:'this is a test', objectID: '123asdasd1', roomname: 'lobby' },
-  ]};
+] };
 
 var handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
@@ -21,13 +25,40 @@ var handleRequest = function(request, response) {
   // default request status code
   var statusCode = 404;
 
+  var query = url.parse(request.url).query;
+  var mainPath = url.parse(request.url).pathname;
+
+  console.log('url -parse:', query);
+
   // checks if the request points to this url
-  if( request.url === '/classes/messages' ){
+  if( mainPath === '/classes/messages' ){
 
     // check if the request type is either GET or OPTIONS
     if( request.method === 'GET' || request.method === 'OPTIONS' ){
 
       statusCode = 200;
+
+      var headers = defaultCorsHeaders;
+
+      headers['Content-Type'] = "text/plain";
+
+      response.writeHead(statusCode, headers);
+
+      if(query === 'order=-createdAt'){
+        // if we have not already sorted
+        // sort results
+        // else response.end sorted results
+        if( !sortedResults ){
+          var sortedResults = messages.results.reverse();
+          var sortedMessages = { results: sortedResults };
+          console.log('identified query', sortedMessages);
+        }
+        response.end(JSON.stringify(sortedMessages));
+      } else {
+        response.end(JSON.stringify(messages));
+      }
+
+
     } else if( request.method === 'POST' ){
 
       // sets a created status response
@@ -48,15 +79,33 @@ var handleRequest = function(request, response) {
         var parsedBody = JSON.parse(body);
         parsedBody.objectId = Math.floor(Math.random() * 100);
         parsedBody.roomname = 'lobby';
+
+        var date = new Date();
+        parsedBody.createdAt = date.toJSON();
+
         messages.results.push( parsedBody );
       });
 
+      var headers = defaultCorsHeaders;
+
+      headers['Content-Type'] = "text/plain";
+
+      response.writeHead(statusCode, headers);
+
+      response.end(JSON.stringify(messages));
     }
   // same process when the request attempts to access a room url
-  }else if( request.url === '/classes/room1' ){
+  }else if( mainPath === '/classes/room1' ){
 
     if( request.method === 'GET' ){
       statusCode = 200;
+      var headers = defaultCorsHeaders;
+
+      headers['Content-Type'] = "text/plain";
+
+      response.writeHead(statusCode, headers);
+
+      response.end(JSON.stringify(messages));
     }else if( request.method === 'POST' ){
       statusCode = 201;
       var body = "";
@@ -70,26 +119,17 @@ var handleRequest = function(request, response) {
         messages.results.push( parsedBody );
       });
 
+      var headers = defaultCorsHeaders;
+
+      headers['Content-Type'] = "text/plain";
+
+      response.writeHead(statusCode, headers);
+
+      response.end(JSON.stringify(messages));
     }
 
   }
-  /* Without this line, this server wouldn't work. See the note
-   * below about CORS. */
-  var headers = defaultCorsHeaders;
 
-
-  headers['Content-Type'] = "text/plain";
-
-  /* .writeHead() tells our server what HTTP status code to send back */
-  response.writeHead(statusCode, headers);
-
-    /* Make sure to always call response.end() - Node will not send
-     * anything back to the client until you do. The string you pass to
-     * response.end() will be the body of the response - i.e. what shows
-     * up in the browser.*/
-
-     // want to pass in parsed data
-  response.end(JSON.stringify(messages));
 
 };
 
