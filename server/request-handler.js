@@ -10,6 +10,7 @@
    { username:'foo', text:'this is what data looks like', objectID: '75', roomname: 'lobby' }
 */
 var url = require('url');
+var fs = require('fs');
 
 var messages = { results:[
 ] };
@@ -17,7 +18,13 @@ var messages = { results:[
 var handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
   request - such as what URL the browser is requesting. */
-
+  // if(request.url === "/"){
+  //   fs.readFile('../client/client/index.html', "binary", function(err, file){
+  //     response.writeHead(200, {'Content-Type': 'text/plain'});
+  //     response.write(file, "binary");
+  //     response.end();
+  //   });
+  // }
   /* Documentation for both request and response can be found at
    * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
   console.log("Serving request type " + request.method + " for url " + request.url);
@@ -48,12 +55,15 @@ var handleRequest = function(request, response) {
         // if we have not already sorted
         // sort results
         // else response.end sorted results
+
         if( !sortedResults ){
-          var sortedResults = messages.results.reverse();
+          var sortedResults = messages.results.slice(0);
+          sortedResults.reverse();
           var sortedMessages = { results: sortedResults };
-          console.log('identified query', sortedMessages);
+          console.log('sorted', sortedMessages);
+          console.log('original', messages);
         }
-        response.end(JSON.stringify(sortedMessages));
+        response.end(JSON.stringify(messages));
       } else {
         response.end(JSON.stringify(messages));
       }
