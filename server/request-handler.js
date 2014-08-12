@@ -5,10 +5,6 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 
-/*
-  { username:'b', text:'this is a test', objectID: '123asdasd1', roomname: 'lobby' },
-   { username:'foo', text:'this is what data looks like', objectID: '75', roomname: 'lobby' }
-*/
 var url = require('url');
 var fs = require('fs');
 
@@ -69,17 +65,7 @@ var messages = { results:[
 ] };
 
 var handleRequest = function(request, response) {
-  /* the 'request' argument comes from nodes http module. It includes info about the
-  request - such as what URL the browser is requesting. */
-  // if(request.url === "/"){
-  //   fs.readFile('../client/client/index.html', "binary", function(err, file){
-  //     response.writeHead(200, {'Content-Type': 'text/plain'});
-  //     response.write(file, "binary");
-  //     response.end();
-  //   });
-  // }
-  /* Documentation for both request and response can be found at
-   * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
+
   console.log("Serving request type " + request.method + " for url " + request.url);
 
   // default request status code
@@ -105,19 +91,13 @@ var handleRequest = function(request, response) {
       response.writeHead(statusCode, headers);
 
       if(query === 'order=-createdAt'){
-        // if we have not already sorted
-        // sort results
-        // else response.end sorted results
-
         if( !sortedResults ){
           var sortedResults = messages.results.slice(0);
           sortedResults.reverse();
           var sortedMessages = { results: sortedResults };
-          console.log('sorted', sortedMessages);
-          console.log('original', messages);
-          var mostRecentSortedMessages = { results: sortedMessages.results.slice(0, 10) };
+          var mostRecentSortedMessages = { results: sortedMessages.results.slice(0, 100) };
         }
-        response.end(JSON.stringify(mostRecentSortedMessages  ));
+        response.end(JSON.stringify(mostRecentSortedMessages));
       } else {
         response.end(JSON.stringify(messages));
       }
@@ -142,8 +122,7 @@ var handleRequest = function(request, response) {
       request.on('end', function(){
         var parsedBody = JSON.parse(body);
         parsedBody.objectId = Math.floor(Math.random() * 100);
-        parsedBody.roomname = 'lobby';
-
+        console.log(parsedBody.roomname);
         var date = new Date();
         parsedBody.createdAt = date.toJSON();
 
