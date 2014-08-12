@@ -13,6 +13,59 @@ var url = require('url');
 var fs = require('fs');
 
 var messages = { results:[
+
+  { username: 'john doe',
+   text: 'message 1',
+   roomname: 'lobby',
+   objectId: 32,
+   createdAt: '2014-08-12T17:26:38.255Z' },
+ { username: 'john doe',
+   text: 'messgae 2',
+   roomname: 'lobby',
+   objectId: 53,
+   createdAt: '2014-08-12T17:26:39.300Z' },
+ { username: 'john doe',
+   text: 'message 3',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:26:40.347Z' },
+ { username: 'john doe',
+   text: 'message 4',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:26:42.347Z' },
+ { username: 'john doe',
+   text: 'message 5',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:26:43.347Z' },
+ { username: 'john doe',
+   text: 'message 6',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:26:45.347Z' },
+ { username: 'john doe',
+   text: 'message 7',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:26:47.347Z' },
+ { username: 'john doe',
+   text: 'message 8',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:26:50.347Z' },
+ { username: 'john doe',
+   text: 'message 9',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:26:51.347Z' },
+ { username: 'john doe',
+   text: 'message 10',
+   roomname: 'lobby',
+   objectId: 75,
+   createdAt: '2014-08-12T17:27:40.347Z' }
+
+
 ] };
 
 var handleRequest = function(request, response) {
@@ -62,8 +115,9 @@ var handleRequest = function(request, response) {
           var sortedMessages = { results: sortedResults };
           console.log('sorted', sortedMessages);
           console.log('original', messages);
+          var mostRecentSortedMessages = { results: sortedMessages.results.slice(0, 10) };
         }
-        response.end(JSON.stringify(messages));
+        response.end(JSON.stringify(mostRecentSortedMessages  ));
       } else {
         response.end(JSON.stringify(messages));
       }
